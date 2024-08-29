@@ -1,0 +1,71 @@
+Product input files
+
+id		name		Quantity	Price
+
+1				Random		Random
+2
+3
+.
+.
+2000
+
+
+
+Customer input files
+
+id		name
+
+1
+2
+3
+.
+.
+M
+
+
+Place Order input files
+
+customer id (C1) - p1,p2,p3
+no. of products (say 3)
+product id (1st)
+no. of product id (1st)  - quantity
+product id (2nd)
+no. of product id (2nd)
+product id (3rd)
+no. of product id (3rd)
+customer id (C2) - p4,p5
+no. of products (say 2)
+product id (1st)
+no. of product id (1st)
+product id (2nd)
+no. of product id (2nd)
+.
+.
+
+
+500 txns - products for each cust id
+1000 txns
++500
+5000 txns
+
+
+
+
+C1
+3- same for homogeneous and random (1-9) for heterogeneous
+p1-random (1-2000)
+1
+p2-random
+1
+p3-random
+1
+C2
+3
+p2
+1
+p6
+1
+p3
+1
+.
+.
