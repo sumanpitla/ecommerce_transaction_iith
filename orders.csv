@@ -1,6 +1,6 @@
 transaction_id,no_of_products,product_id_1,quantity_1,product_id_2,quantity_2,product_id_3,quantity_3
-txn1,3,pid425,5,pid937,9,pid83,1
-txn2,3,pid506,10,pid910,4,pid904,9
+txn1,3,pid1,10,pid2,10,pid3,15
+txn2,3,pid506,10,pid1,6,pid904,9
 txn3,3,pid232,2,pid565,1,pid336,4
 txn4,3,pid777,1,pid527,8,pid635,4
 txn5,3,pid934,3,pid299,1,pid362,4

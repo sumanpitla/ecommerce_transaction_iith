@@ -1,195 +1,208 @@
 #include <iostream>
-#include <unordered_map>
 #include <vector>
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <map>
 
 using namespace std;
 
-struct Product {
-    int productId;
+struct Order {
+    string productId;
     int quantity;
-    double price;
 };
 
-class Store {
-private:
-    unordered_map<int, Product> productList;
-    vector<vector<int>> transactions; // 2D vector to store transactions: [customerId, productId, quantity]
-
-public:
-    // Load products from CSV file
-    void loadProducts(const string& filename) {
-        ifstream file(filename);
-        if (!file.is_open()) {
-            cerr << "Failed to open product file!" << endl;
-            return;
-        }
-
-        string line;
-        getline(file, line); // Skip header line
-
-        while (getline(file, line)) {
-            stringstream ss(line);
-            string id_str, name, quantity_str, price_str;
-
-            getline(ss, id_str, ',');
-            getline(ss, name, ',');
-            getline(ss, quantity_str, ',');
-            getline(ss, price_str, ',');
-
-            int id = stoi(id_str);
-            int quantity = stoi(quantity_str);
-            double price = stod(price_str);
-
-            productList[id] = {id, quantity, price};
-        }
-
-        file.close();
+// Function to check if all products have sufficient quantity
+bool checkSufficientQuantity(const vector<Order>& orderList) {
+    ifstream file("products.csv");
+    if (!file.is_open()) {
+        cerr << "Failed to open product file!" << endl;
+        return false;
+    }
+     
+    string line;
+   bool productFound = false;
+    bool sufficientQuantity = true;
+    int size=orderList.size();
+    string notFoundProductId;
+    map<string, bool> productMap;
+    for(const auto& order : orderList){
+        productMap[order.productId]=false;
     }
 
-    void displayProductList() {
-        cout << "Available Products:\n";
-        cout << "Product ID | Quantity | Price\n";
-        cout << "-----------------------------\n";
-        for (const auto& productPair : productList) {
-            const Product& product = productPair.second;
-            cout << "   " << product.productId 
-                 << "      |    " << product.quantity 
-                 << "     |  $" << product.price << '\n';
-        }
-        cout << "-----------------------------\n";
-    }
 
-    bool validateOrder(const vector<pair<int, int>>& orderList) {
-        // Check if all products are available and quantities are sufficient
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string id, name, quantity_str, price_str;
+
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, quantity_str, ',');
+        getline(ss, price_str, ',');
         for (const auto& order : orderList) {
-            int productId = order.first;
-            int orderQuantity = order.second;
+            //cout<< id << " " << order.productId << endl;
+            if (id == order.productId) {
+                
+                productMap[order.productId]=true;
+                size-=1;
+                //cout << "Product ID " << order.productId << " found.\n";
+                int currentQuantity = stoi(quantity_str);
 
-            if (productList.find(productId) == productList.end()) {
-                cout << "Transaction failed: Product ID " << productId << " does not exist.\n";
-                return false;
-            }
-
-            if (productList[productId].quantity < orderQuantity) {
-                cout << "Transaction failed: Product ID " << productId << " has insufficient quantity.\n";
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void placeOrder(int customerId, const vector<pair<int, int>>& orderList) {
-        // Validate the order before applying changes
-        if (!validateOrder(orderList)) {
-            cout << "Transaction aborted for Customer ID " << customerId << ".\n";
-            return;  // Abort the transaction if validation fails
-        }
-
-        double totalCost = 0.0;
-
-        // Process the order if all products are validated
-        vector<int> customerTransaction;
-        customerTransaction.push_back(customerId);
-        for (const auto& order : orderList) {
-            int productId = order.first;
-            int orderQuantity = order.second;
-
-            // Deduct the ordered quantity from the store
-            productList[productId].quantity -= orderQuantity;
-
-            // Record the transaction
-            customerTransaction.push_back(productId);
-            customerTransaction.push_back(orderQuantity);
-
-            // Calculate the total cost for the current product
-            totalCost += productList[productId].price * orderQuantity;
-        }
-        transactions.push_back(customerTransaction);
-
-        // Display successful transaction and total cost
-        cout << "Transaction successful for Customer ID " << customerId << ".\n";
-        cout << "Total Cost: $" << totalCost << '\n';
-    }
-
-    void processOrders(const string& filename, const string& outputFilename) {
-        ifstream file(filename);
-        if (!file.is_open()) {
-            cerr << "Failed to open order file!" << endl;
-            return;
-        }
-
-        ofstream outputFile(outputFilename);
-        if (!outputFile.is_open()) {
-            cerr << "Failed to open output file!" << endl;
-            return;
-        }
-
-        string line;
-        getline(file, line); // Skip header line
-
-        int customerCount = 0;
-        while (getline(file, line) && customerCount < 10) {
-            stringstream ss(line);
-            string customerId_str, no_of_products_str, product_id_1_str, quantity_1_str,
-                   product_id_2_str, quantity_2_str, product_id_3_str, quantity_3_str;
-
-            getline(ss, customerId_str, ',');
-            getline(ss, no_of_products_str, ',');
-            getline(ss, product_id_1_str, ',');
-            getline(ss, quantity_1_str, ',');
-            getline(ss, product_id_2_str, ',');
-            getline(ss, quantity_2_str, ',');
-            getline(ss, product_id_3_str, ',');
-            getline(ss, quantity_3_str, ',');
-
-            int customerId = stoi(customerId_str);
-            int no_of_products = stoi(no_of_products_str);
-
-            vector<pair<int, int>> orderList;
-            if (!product_id_1_str.empty() && !quantity_1_str.empty())
-                orderList.push_back({stoi(product_id_1_str), stoi(quantity_1_str)});
-            if (!product_id_2_str.empty() && !quantity_2_str.empty())
-                orderList.push_back({stoi(product_id_2_str), stoi(quantity_2_str)});
-            if (!product_id_3_str.empty() && !quantity_3_str.empty())
-                orderList.push_back({stoi(product_id_3_str), stoi(quantity_3_str)});
-
-            placeOrder(customerId, orderList);
-
-            // Save transaction to the output file if successful
-            if (validateOrder(orderList)) {
-                outputFile << customerId << ", ";
-                for (const auto& order : orderList) {
-                    outputFile << "Product ID: " << order.first << " Quantity: " << order.second << ", ";
+                if (currentQuantity < order.quantity) {
+                    sufficientQuantity = false;
+                    cout << "Transaction failed: Product ID " << order.productId << " has insufficient quantity.\n";
+                    return false;
                 }
-                outputFile << endl;
+                //orderList.erase(remove(orderList.begin(), orderList.end(), order), orderList.end());
+                
+            }
 
-                customerCount++;
+        }
+ 
+        if(size==0){
+            break;
+        }
+         
+    }
+    if(size>0){
+        for(const auto& product:productMap){
+            cout << product.first << " " << product.second << endl;
+            if(product.second==false){
+                notFoundProductId=product.first;
+                break;
+            }
+        }
+        cout << "Transaction failed: "<<notFoundProductId <<" not found.\n";
+        return false;
+    }
+
+    file.close();
+    return sufficientQuantity;
+}
+
+// Function to update the product quantities in the CSV file
+bool updateProductQuantities(const vector<Order>& orderList) {
+    ifstream file("products.csv");
+    if (!file.is_open()) {
+        cerr << "Failed to open product file!" << endl;
+        return false;
+    }
+
+    vector<string> fileLines;
+    string line;
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string id, name, quantity_str, price_str;
+
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, quantity_str, ',');
+        getline(ss, price_str, ',');
+
+        for (const auto& order : orderList) {
+            if (id == order.productId) {
+                int currentQuantity = stoi(quantity_str);
+                currentQuantity -= order.quantity;
+                line = id + "," + name + "," + to_string(currentQuantity) + "," + price_str;
             }
         }
 
-        file.close();
-        outputFile.close();
+        fileLines.push_back(line);
     }
-};
+
+    file.close();
+
+    // Write the updated lines back to the CSV file
+    ofstream outFile("products.csv");
+    if (!outFile.is_open()) {
+        cerr << "Failed to open product file for writing!" << endl;
+        return false;
+    }
+
+    for (const auto& updatedLine : fileLines) {
+        outFile << updatedLine << "\n";
+    }
+
+    outFile.close();
+    return true;
+}
+
+// Function to process a single order
+bool processOrder(const vector<Order>& orderList) {
+    if (!checkSufficientQuantity(orderList)) {
+        return false;
+    }
+    return updateProductQuantities(orderList);
+}
+
+// Function to process orders from the CSV file
+void processOrders(const string& txn_id, const string& filename) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Failed to open order file!" << endl;
+        return;
+    }
+
+    string line;
+    getline(file, line); // Skip header line
+
+    bool found = false;
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string transactionId, no_of_products_str, product_id_1, quantity_1,
+               product_id_2, quantity_2, product_id_3, quantity_3;
+
+        getline(ss, transactionId, ',');
+        getline(ss, no_of_products_str, ',');
+        getline(ss, product_id_1, ',');
+        getline(ss, quantity_1, ',');
+        getline(ss, product_id_2, ',');
+        getline(ss, quantity_2, ',');
+        getline(ss, product_id_3, ',');
+        getline(ss, quantity_3, ',');
+
+        if (transactionId == txn_id) {
+            found = true;
+
+            vector<Order> orderList;
+            if (!product_id_1.empty() && !quantity_1.empty())
+                orderList.push_back({product_id_1, stoi(quantity_1)});
+            if (!product_id_2.empty() && !quantity_2.empty())
+                orderList.push_back({product_id_2, stoi(quantity_2)});
+            if (!product_id_3.empty() && !quantity_3.empty())
+                orderList.push_back({product_id_3, stoi(quantity_3)});
+
+            if (processOrder(orderList)) {
+                cout << "Transaction successful for Transaction ID " << txn_id << ".\n";
+            } else {
+                cout << "Transaction aborted for Transaction ID " << txn_id << ".\n";
+            }
+
+            break;  // Stop searching after finding the transaction ID
+        }
+    }
+
+    if (!found) {
+        cout << "Transaction ID " << txn_id << " not found.\n";
+    }
+
+    file.close();
+}
 
 int main() {
-    Store store;
+    int txn_id;
+    string filename = "orders.csv";
+    
+    // Input transaction ID
+    cout << "Enter transaction ID: ";
+    cin >> txn_id;
 
-    // Load products from CSV
-    store.loadProducts("products.csv");
+    // Convert integer txn_id to formatted string "txnX"
+    string txn_id_str = "txn" + to_string(txn_id);
 
-    // Display predefined product list
-    store.displayProductList();
-
-    // Process orders from CSV and store transactions in output file
-    store.processOrders("orders.csv", "customer_transactions.csv");
-
-    // Display updated product list after transactions
-    cout << "\nUpdated Product List:\n";
-    store.displayProductList();
+    // Process orders from CSV
+    processOrders(txn_id_str, filename);
 
     return 0;
 }
