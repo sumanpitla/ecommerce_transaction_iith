@@ -150,28 +150,27 @@ void processOrders(const string& txn_id, const string& filename) {
     bool found = false;
     while (getline(file, line)) {
         stringstream ss(line);
-        string transactionId, no_of_products_str, product_id_1, quantity_1,
-               product_id_2, quantity_2, product_id_3, quantity_3;
+        string transactionId, no_of_products_str;
 
         getline(ss, transactionId, ',');
         getline(ss, no_of_products_str, ',');
-        getline(ss, product_id_1, ',');
-        getline(ss, quantity_1, ',');
-        getline(ss, product_id_2, ',');
-        getline(ss, quantity_2, ',');
-        getline(ss, product_id_3, ',');
-        getline(ss, quantity_3, ',');
 
         if (transactionId == txn_id) {
             found = true;
 
+            int no_of_products = stoi(no_of_products_str);
             vector<Order> orderList;
-            if (!product_id_1.empty() && !quantity_1.empty())
-                orderList.push_back({product_id_1, stoi(quantity_1)});
-            if (!product_id_2.empty() && !quantity_2.empty())
-                orderList.push_back({product_id_2, stoi(quantity_2)});
-            if (!product_id_3.empty() && !quantity_3.empty())
-                orderList.push_back({product_id_3, stoi(quantity_3)});
+
+            for (int i = 0; i < no_of_products; ++i) {
+                string product_id, quantity_str;
+                getline(ss, product_id, ',');
+                getline(ss, quantity_str, ',');
+
+                if (!product_id.empty() && !quantity_str.empty()) {
+                    orderList.push_back({product_id, stoi(quantity_str)});
+                }
+            }
+
 
             if (processOrder(orderList)) {
                 cout << "Transaction successful for Transaction ID " << txn_id << ".\n";

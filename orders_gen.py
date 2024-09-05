@@ -1,31 +1,44 @@
 import csv
 import random
+
 # Define the file name for order data
 filename_orders = "orders.csv"
 
-# Create the headers for order data
-headers_orders = ["transaction_id", "no_of_products", "product_id_1", "quantity_1", 
-                  "product_id_2", "quantity_2", "product_id_3", "quantity_3"]
-
 # Generate order data for some customers
 orders = []
+max_products_per_order = 0
+
 for i in range(1, 21):  # Generate orders for 20 customers
-    customer_id = "txn"+str(i)
-    no_of_products = 3  # Each customer orders between 1 to 3 products
-    product_ids =  ["pid" + str(pid) for pid in random.sample(range(1, 1001), no_of_products)]# Random product ids from 1 to 1000
+    customer_id = "txn" + str(i)
+    no_of_products = random.randint(1, 9)  # Each customer orders between 1 to 9 products randomly
+    product_ids = ["pid" + str(pid) for pid in random.sample(range(1, 1001), no_of_products)]  # Random product ids from 1 to 1000
     quantities = [random.randint(1, 10) for _ in range(no_of_products)]  # Random quantities between 1 to 10
-    
-    # Fill in the order details (with placeholders for non-ordered products)
+
+    # Track the maximum number of products in any order
+    max_products_per_order = max(max_products_per_order, no_of_products)
+
+    # Fill in the order details
     order = [customer_id, no_of_products] + \
-            [item for pair in zip(product_ids, quantities) for item in pair] + \
-            [None] * (6 - 2 * no_of_products)  # Fill remaining columns with None if fewer than 3 products
+            [item for pair in zip(product_ids, quantities) for item in pair]
     
     orders.append(order)
+
+# Create the headers dynamically based on the max number of products ordered in any transaction
+headers_orders = ["transaction_id", "no_of_products"]
+for i in range(1, max_products_per_order + 1):
+    headers_orders.append(f"product_id_{i}")
+    headers_orders.append(f"quantity_{i}")
 
 # Write to CSV
 with open(filename_orders, 'w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(headers_orders)
-    writer.writerows(orders)
+    
+    # Write the orders, filling with None where there are fewer products in the order
+    for order in orders:
+        writer.writerow(order + [None] * (2 * max_products_per_order - len(order) + 2))
 
-filename_orders
+print(f"Orders written to {filename_orders}")
+
+
+
