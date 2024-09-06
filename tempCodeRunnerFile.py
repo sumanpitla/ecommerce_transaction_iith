@@ -2,7 +2,7 @@ import csv
 import random
 
 # Define the file name for order data
-filename_orders = "orders_temp.csv"
+filename_orders = "orders.csv"
 
 # Generate order data for some customers
 orders = []
@@ -39,3 +39,6 @@ with open(filename_orders, 'w', newline='') as file:
         writer.writerow(order + [None] * (2 * max_products_per_order - len(order) + 2))
 
 print(f"Orders written to {filename_orders}")
+
+
+

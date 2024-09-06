@@ -1,3 +1,4 @@
+# include "ProductOrderAtomacity.h"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -7,10 +8,10 @@
 
 using namespace std;
 
-struct Order {
-    string productId;
-    int quantity;
-};
+// struct Order {
+//     string productId;
+//     int quantity;
+// };
 
 // Function to check if all products have sufficient quantity
 bool checkSufficientQuantity(const vector<Order>& orderList) {
@@ -130,6 +131,7 @@ bool updateProductQuantities(const vector<Order>& orderList) {
 
 // Function to process a single order
 bool processOrder(const vector<Order>& orderList) {
+
     if (!checkSufficientQuantity(orderList)) {
         return false;
     }
@@ -137,7 +139,10 @@ bool processOrder(const vector<Order>& orderList) {
 }
 
 // Function to process orders from the CSV file
-void processOrders(const string& txn_id, const string& filename) {
+void processOrders(const int txn_id, const string& filename) {
+    // Convert integer txn_id to formatted string "txnX"
+    string txn_id_str = "txn" + to_string(txn_id);
+    
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "Failed to open order file!" << endl;
@@ -145,17 +150,22 @@ void processOrders(const string& txn_id, const string& filename) {
     }
 
     string line;
-    getline(file, line); // Skip header line
-
+    //getline(file, line); // Skip header line
+     
     bool found = false;
     while (getline(file, line)) {
+        //Assuming that format of the CSV file is as follows:
+        //transaction_id,no_of_products,{i=1 to no_of_products} product_id_i, quantity_i)
+        //for example:if no_of_products=2 then=> product_id_1=1, quantity_1=2, product_id_2=3, quantity_2=4
+
+
         stringstream ss(line);
         string transactionId, no_of_products_str;
 
         getline(ss, transactionId, ',');
         getline(ss, no_of_products_str, ',');
 
-        if (transactionId == txn_id) {
+        if (transactionId == txn_id_str) {
             found = true;
 
             int no_of_products = stoi(no_of_products_str);
@@ -189,19 +199,19 @@ void processOrders(const string& txn_id, const string& filename) {
     file.close();
 }
 
-int main() {
-    int txn_id;
-    string filename = "orders.csv";
+// int main() {
+//     int txn_id;
+//     string filename = "orders_temp.csv";
     
-    // Input transaction ID
-    cout << "Enter transaction ID: ";
-    cin >> txn_id;
+//     // Input transaction ID
+//     cout << "Enter transaction ID: ";
+//     cin >> txn_id;
 
-    // Convert integer txn_id to formatted string "txnX"
-    string txn_id_str = "txn" + to_string(txn_id);
+    
+    
 
-    // Process orders from CSV
-    processOrders(txn_id_str, filename);
+//     // Process orders from CSV
+//     processOrders(txn_id, filename);
 
-    return 0;
-}
+//     return 0;
+// }

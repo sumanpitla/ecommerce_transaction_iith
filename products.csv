@@ -1,5 +1,5 @@
 id,name,quantity,price
-pid1,product1,249,495.68
+pid1,product1,186,495.68
 pid2,product2,50,920.25
 pid3,product3,469,41.78
 pid4,product4,47,103.58
@@ -15,7 +15,7 @@ pid13,product13,229,411.91
 pid14,product14,77,334.22
 pid15,product15,235,102.61
 pid16,product16,367,144.41
-pid17,product17,264,942.22
+pid17,product17,256,942.22
 pid18,product18,246,557.14
 pid19,product19,476,614.34
 pid20,product20,250,259.39
@@ -100,7 +100,7 @@ pid98,product98,449,875.63
 pid99,product99,330,928.98
 pid100,product100,355,26.46
 pid101,product101,482,860.03
-pid102,product102,432,617.8
+pid102,product102,428,617.8
 pid103,product103,158,397.85
 pid104,product104,106,85.06
 pid105,product105,437,707.94
@@ -596,7 +596,7 @@ pid594,product594,244,123.1
 pid595,product595,213,262.73
 pid596,product596,164,96.49
 pid597,product597,455,524.58
-pid598,product598,250,821.44
+pid598,product598,170,821.44
 pid599,product599,454,371.09
 pid600,product600,286,604.14
 pid601,product601,119,42.04
@@ -740,7 +740,7 @@ pid738,product738,367,708.14
 pid739,product739,155,986.35
 pid740,product740,95,541.5
 pid741,product741,38,433
-pid742,product742,483,385.21
+pid742,product742,459,385.21
 pid743,product743,427,76.86
 pid744,product744,187,108.09
 pid745,product745,338,702
@@ -778,7 +778,7 @@ pid776,product776,168,937.3
 pid777,product777,215,599.9
 pid778,product778,363,540.52
 pid779,product779,496,56.22
-pid780,product780,320,701.45
+pid780,product780,280,701.45
 pid781,product781,271,323.19
 pid782,product782,485,868.2
 pid783,product783,483,537.69
@@ -901,7 +901,7 @@ pid899,product899,108,360.7
 pid900,product900,350,654.57
 pid901,product901,67,887.13
 pid902,product902,477,207.11
-pid903,product903,146,11.4
+pid903,product903,140,11.4
 pid904,product904,249,712.05
 pid905,product905,58,598.23
 pid906,product906,234,564.19
