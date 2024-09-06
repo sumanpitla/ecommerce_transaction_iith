@@ -34,7 +34,7 @@ git clone https://github.com/sumanpitla/ecommerce_transaction_iith.git
 cd ecommerce_transaction_iith
 ```
 
-## Commands to Execute (Windows):
+### Commands to Execute (Windows):
 ### compile the program
 ```bash
 g++ -o MainProgram MainProgram.cpp ProductOrderAtomacity.cpp
